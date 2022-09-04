@@ -14,9 +14,6 @@ from models.city import City
 from models.place import Place
 from models.review import Review
 
-classes = {"Amenity": Amenity, "BaseModel": BaseModel, "City": City,
-           "Place": Place, "Review": Review, "State": State, "User": User}
-
 
 class FileStorage:
     """
@@ -55,9 +52,8 @@ class FileStorage:
         -> Only IF it exists!
         """
         try:
-            with open(self.__file_path, 'r') as f:
-                jo = json.load(f)
-            for key in jo:
-                self.__objects[key] = classes[jo[key]["__class__"]](**jo[key])
-        except:
-            pass
+            with open(self.__file_path, encoding="utf-8") as f:
+                for obj in json.load(f).values():
+                    self.new(eval(obj["__class__"])(**obj))
+        except FileNotFoundError:
+            return
